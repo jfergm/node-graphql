@@ -2,10 +2,14 @@ const express = require('express')
 const { ApolloServer, gql } = require('apollo-server-express')
 const cors = require('cors')
 const dotEnv = require('dotenv')
+
 const { connection } = require('./database/connection')
 
 const resolvers = require('./resolvers')
 const typeDefs = require('./typeDefs')
+
+const { verifyToken } = require('./helpers/context')
+
 //env variables
 dotEnv.config()
 
@@ -19,7 +23,13 @@ app.use(cors())
 
 const apolloServer = new ApolloServer({
   typeDefs,
-  resolvers
+  resolvers,
+  context: async ({ req }) => {
+    await verifyToken(req)
+    return {
+      email: req.email
+    }
+  }
 })
 
 apolloServer.applyMiddleware({app, path: '/graphql'})
