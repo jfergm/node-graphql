@@ -9,9 +9,9 @@ const { isAuthenticated } = require('./middleware')
 
 module.exports = {
   Query: {
-    user: combineResolvers(isAuthenticated, async (_, __, { email }) => {
+    user: combineResolvers(isAuthenticated, async (_, __, { id }) => {
       try {
-        const user = await User.findOne({ email })
+        const user = await User.findById(id)
         return user
       } catch(error)  {
         throw error
