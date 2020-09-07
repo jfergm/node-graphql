@@ -4,10 +4,19 @@ const Task = require('../models/task')
 const User = require('../models/user')
 
 const { isAuthenticated } = require('./middleware')
+const task = require('../models/task')
 
 module.exports = {
   Query: {
-    tasks: () => tasks,
+    tasks: async (_, __, { id }) => {
+      try {
+        const tasks = await Task.find({ user: id })
+        return tasks
+
+      } catch(error) {
+        throw error
+      }
+    },
     task: (_, {id}) => tasks.find(task => task.id === id),
   },
   Mutation: {
