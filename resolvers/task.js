@@ -11,9 +11,9 @@ module.exports = {
     task: (_, {id}) => tasks.find(task => task.id === id),
   },
   Mutation: {
-    createTask: combineResolvers(isAuthenticated ,async (_, { input }, { email }) => {
+    createTask: combineResolvers(isAuthenticated ,async (_, { input }, { id }) => {
       try {
-        const user = await User.findOne({email})
+        const user = await User.findById(id)
         const newTask = Task({ ...input, user: user.id})
 
         await newTask.save()
