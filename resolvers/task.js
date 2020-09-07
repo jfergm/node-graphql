@@ -8,9 +8,9 @@ const task = require('../models/task')
 
 module.exports = {
   Query: {
-    tasks: combineResolvers(isAuthenticated, async (_, __, { id }) => {
+    tasks: combineResolvers(isAuthenticated, async (_, __, { userId }) => {
       try {
-        const tasks = await Task.find({ user: id })
+        const tasks = await Task.find({ user: userId })
         return tasks
 
       } catch(error) {
