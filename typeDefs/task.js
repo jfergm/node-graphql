@@ -9,7 +9,6 @@ module.exports = gql`
   input taskInput {
     name: String!,
     completed: Boolean!
-    userId: ID!
   }
 
   extend type Mutation {
