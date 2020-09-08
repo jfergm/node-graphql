@@ -52,6 +52,15 @@ module.exports = {
       } catch(error) {
         throw error
       }
+    }),
+    deleteTask: combineResolvers(isAuthenticated, isTaskOwner, async (_, { id }, { userId }) => {
+      try {
+        const task = Task.findByIdAndDelete(id)
+        await User.updateOne({ _id: userId }, { $pull: { tasks: id} })
+        return task
+      } catch(error) {
+        throw error
+      }
     })
   },
   Task: {
