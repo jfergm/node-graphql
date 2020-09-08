@@ -28,9 +28,9 @@ module.exports = {
     }),
   },
   Mutation: {
-    createTask: combineResolvers(isAuthenticated ,async (_, { input }, { id }) => {
+    createTask: combineResolvers(isAuthenticated, async (_, { input }, { userId }) => {
       try {
-        const user = await User.findById(id)
+        const user = await User.findById(userId)
         const newTask = Task({ ...input, user: user.id})
 
         await newTask.save()
@@ -40,6 +40,15 @@ module.exports = {
         await user.save()
         
         return newTask
+      } catch(error) {
+        throw error
+      }
+    }),
+    updateTask: combineResolvers(isAuthenticated, isTaskOwner, async (_, { id, input }) => {
+      try {
+        const task = Task.findByIdAndUpdate(id, { ...input }, { new: true })
+
+        return task
       } catch(error) {
         throw error
       }
