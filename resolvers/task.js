@@ -46,8 +46,13 @@ module.exports = {
     })
   },
   Task: {
-    user: ({userId}) => {
-      return users.find( user => user.id === userId)
+    user: async ({user}) => {
+      try {
+        const taskUser = await User.findById(user)
+        return taskUser
+      } catch(error) {
+        throw error
+      }
     }
   }
 }
