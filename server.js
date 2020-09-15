@@ -2,6 +2,7 @@ const express = require('express')
 const { ApolloServer, gql } = require('apollo-server-express')
 const cors = require('cors')
 const dotEnv = require('dotenv')
+const Dataloader = require('dataloader')
 
 const { connection } = require('./database/connection')
 
@@ -9,6 +10,8 @@ const resolvers = require('./resolvers')
 const typeDefs = require('./typeDefs')
 
 const { verifyToken } = require('./helpers/context')
+
+const loaders = require('./loaders')
 
 //env variables
 dotEnv.config()
@@ -25,11 +28,19 @@ const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
   context: async ({ req }) => {
-    await verifyToken(req)
-    return {
-      userId: req.userLoggedId
+    const contextObj = {}
+    if (req) {
+      await verifyToken(req)
+      contextObj.userId = req.userLoggedId
     }
+    contextObj.loaders = {
+      user: new Dataloader(keys => loaders.user.batchUsers(keys))
+    }
+    
+    return contextObj;
+
   }
+  
 })
 
 apolloServer.applyMiddleware({app, path: '/graphql'})

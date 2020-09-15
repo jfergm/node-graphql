@@ -64,9 +64,9 @@ module.exports = {
     })
   },
   Task: {
-    user: async ({user}) => {
+    user: async (parent, _, { loaders }) => {
       try {
-        const taskUser = await User.findById(user)
+        const taskUser = await loaders.user.load(parent.user.toString())
         return taskUser
       } catch(error) {
         throw error
