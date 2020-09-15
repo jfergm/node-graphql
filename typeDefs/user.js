@@ -31,4 +31,8 @@ module.exports = gql`
     email: String!
     tasks: [Task!]
   }
+
+  extend type Subscription {
+    userCreated: User
+  }
 `

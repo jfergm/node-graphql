@@ -51,6 +51,8 @@ app.use('/', (req, res, next) => {
   res.send({message: 'Hello'})
 })
 
-app.listen(PORT, () => {
+const httpServer = app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`)
 })
+
+apolloServer.installSubscriptionHandlers(httpServer);

@@ -7,6 +7,9 @@ const Task = require('../models/task')
 
 const { isAuthenticated } = require('./middleware')
 
+const PubSub = require('../subscription')
+const { userEvents } = require('../subscription/events')
+
 module.exports = {
   Query: {
     user: combineResolvers(isAuthenticated, async (_, __, { userId }) => {
@@ -28,6 +31,11 @@ module.exports = {
         } else {
           const hashPassword = await bcrypt.hash(input.password, 12)
           const newUser = new User({...input, password: hashPassword})
+
+          PubSub.publish(userEvents.USER_CREATED, {
+            userCreated: newUser
+          })
+  
           return await newUser.save()
         }
       } catch(error) {
@@ -57,6 +65,12 @@ module.exports = {
         throw error
       }
      }
+  },
+ 
+  Subscription: {
+    userCreated: {
+      subscribe: () => PubSub.asyncIterator(userEvents.USER_CREATED)
+    }
   },
   User: {
     tasks: async ({ id }) => {
